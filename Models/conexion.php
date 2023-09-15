@@ -4,7 +4,7 @@ class Conexion{
 
   private $servidor = "localhost";
   private $puerto = "3306";
-  private $baseDatos = "wsrestaurant";
+  private $baseDatos = "DBOLYMPUS";
   private $usuario = "root";
   private $clave = "";
 
