@@ -204,3 +204,11 @@ INSERT INTO Docentes (idpersona, especialidad, cv, numEmergencia) VALUES ('4', '
 INSERT INTO Pagos (idtaller, idmatricula, idformapago, monto, fechapago) VALUES ()
 
 INSERT INTO Formaspago (formapago) VALUES ('Yape')
+
+-- Procedimientos almacenados MATRICULAS
+
+DELIMITER $$
+CREATE PROCEDURE spu_registrar_matriculas
+(
+	IN _
+)
