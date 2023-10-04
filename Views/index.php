@@ -30,7 +30,7 @@
 
           <ul class="menu-links">
             <li class="nav-link">
-              <a href="#">
+              <a href="index.php?view=dashboard">
                 <i class="bx bx-home-alt icon"></i>
                 <span class="text nav-text">Dashboard</span>
               </a>
@@ -65,7 +65,7 @@
             </li>
 
             <li class="nav-link">
-              <a href="#">
+              <a href="index.php?view=matriculas">
                 <i class="bx bxs-receipt icon"></i>
                 <span class="text nav-text">Matriculas</span>
               </a>
@@ -79,7 +79,7 @@
             </li>
 
             <li class="nav-link">
-              <a href="#">
+              <a href="index.php?view=reportes">
                 <i class="bx bxs-report icon"></i>
                 <span class="text nav-text">Reportes</span>
               </a>
@@ -117,20 +117,23 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <script>
-      document.addEventListener("DOMContentLoaded", ()=> {
-        function getURL(){
-          //1. Obtener la URL
-          const url = new URL(window.location.href);
-          //2. Obtener el valor enviado por la URL
-          const vista = url.searchParams.get("view") + '.php';
-          //3. Enviando a contenedor
-          if (vista != null){
-            $("#contenido-asincrono").load(`./content/${vista}`);
-          }
-        }
 
-        getURL();
+      $(document).ready(function (){
+        function getURL(){
+            //1. Obtener la URL
+            const url = new URL(window.location.href);
+            //2. Obtener el valor enviado por la URL
+            const vista = url.searchParams.get("view") + '.php';
+            //3. Enviando a contenedor
+            if (vista != null){
+              $("#contenido-asincrono").load(`./content/${vista}`);
+            }
+          }
+  
+          getURL();
       });
+
+
     </script>
 
   </body>

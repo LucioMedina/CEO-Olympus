@@ -6,15 +6,19 @@ CREATE TABLE Personas
 	idpersona 	INT PRIMARY KEY AUTO_INCREMENT, 
 	nombres		VARCHAR(30)		NOT NULL,
 	apellidos	VARCHAR(30)		NOT NULL,
-	sexo			CHAR(1)			NOT NULL, -- Masculino(M) - Femenino(F)
-	telefono		VARCHAR(9) 		NOT NULL,
+	sexo		CHAR(1)			NOT NULL, -- Masculino(M) - Femenino(F)
+	telefono	VARCHAR(9) 		NOT NULL,
 	correo		VARCHAR(30)		NOT NULL,
 	direccion 	VARCHAR(30)		NOT NULL,
-	fechaNac 	VARCHAR(30)		NOT NULL,
+	fechaNac 	DATE 				NOT NULL,
 	tipoDoc		VARCHAR(10)		NOT NULL,
 	numDoc		VARCHAR(15)		NOT NULL
+	CONSTRAINT uk_numDoc UNIQUE (numDoc)
 )ENGINE=INNODB;
 
+ALTER TABLE Personas ADD CONSTRAINT uk_numDoc UNIQUE (numDoc);
+
+SELECT * FROM Personas
 
 CREATE TABLE Usuarios
 (
@@ -47,16 +51,15 @@ CREATE TABLE Docentes
 CREATE TABLE Matriculas
 (
 	idmatricula		INT PRIMARY KEY AUTO_INCREMENT,
-	idalumno			INT 				NOT NULL,
-	idapoderado		INT 				NOT NULL,
-	idtaller			INT 				NOT NULL,
-	fechamatricula	DATETIME 		NOT NULL DEFAULT NOW(),
+	idalumno		INT NOT NULL,
+	idapoderado		INT NOT NULL,
+	idtaller		INT NOT NULL,
+	fechamatricula	DATETIME NOT NULL DEFAULT NOW(),
 	precioacordado	DECIMAL(7,2)	NOT NULL,
-	observacion		VARCHAR(30)		NOT NULL,
+	observacion		VARCHAR(500)		NOT NULL,
 	CONSTRAINT fk_idalumno_matriculas FOREIGN KEY (idalumno) REFERENCES Personas (idpersona),
-	CONSTRAINT fk_idapoderado_matriculas FOREIGN KEY (idapoderado)	REFERENCES Personas (idpersona),
-	CONSTRAINT fk_idmodulo_matriculas FOREIGN KEY (idmodulo) REFERENCES Modulos (idmodulo)
-	
+	CONSTRAINT fk_idapoderado_matriculas FOREIGN KEY (idapoderado)	REFERENCES Personas (idpersona)
+
 )ENGINE=INNODB;
 
 
@@ -68,7 +71,6 @@ CREATE TABLE Pagos
 	idformapago	INT 				NOT NULL,
 	monto			DECIMAL(7,2)	NOT NULL,
 	fechapago	DATETIME 		NOT NULL,
-	CONSTRAINT fk_idmodulo_pagos FOREIGN KEY (idmodulo) REFERENCES Modulos (idmodulo),
 	CONSTRAINT fk_idmatricula_pagos FOREIGN KEY (idmatricula) REFERENCES Matriculas (idmatricula),
 	CONSTRAINT fk_idformapago_pagos FOREIGN KEY (idformapago) REFERENCES Formaspago (idformapago)
 	
@@ -106,7 +108,6 @@ CREATE TABLE DetalleTaller
 	dias					VARCHAR(30)		NOT NULL,
 	horainicio			TIME				NOT NULL,
 	horafin				TIME				NOT NULL,
-CONSTRAINT fk_idmodelo_detallemodulo FOREIGN KEY (idmodulo) REFERENCES Modulos (idmodulo),
 CONSTRAINT fk_idcurso_detallemodulo FOREIGN KEY (idcurso) REFERENCES Cursos (idcurso),
 CONSTRAINT fk_iddocente_detallemodulo FOREIGN KEY (iddocente) REFERENCES Docentes (iddocente)
 	
@@ -115,13 +116,12 @@ CONSTRAINT fk_iddocente_detallemodulo FOREIGN KEY (iddocente) REFERENCES Docente
 CREATE TABLE ListaAlumnos
 (
 	idlistaalumno 		INT PRIMARY KEY AUTO_INCREMENT,
-	iddetalletaller	INT 		NOT NULL,
-CONSTRAINT fk_iddetallemodulo_listaalumnos FOREIGN KEY (iddetallemodulo) REFERENCES DetalleModulo (iddetallemodulo)
-
+	iddetalletaller	INT 		NOT NULL
 )ENGINE=INNODB;
 
 -- Procedimientos almacenados PERSONAS
 
+-- Registrar
 DELIMITER $$
 CREATE PROCEDURE spu_registrar_personas
 (
@@ -146,6 +146,7 @@ CALL spu_registrar_personas('Pedro', 'Sanchez Quispe', 'M', '976675276', 'pedro1
 CALL spu_registrar_personas('Sofia', 'Salazar Ramos', 'F', '987676545', 'sofia321@gmail.com', 'Av. Union #256', '10-09-2003', 'DNI', '58965874')
 
 
+-- listar
 DELIMITER $$
 CREATE PROCEDURE spu_listar_personas()
 BEGIN 
@@ -155,6 +156,61 @@ END $$
 CALL spu_listar_personas()
 
 DELETE FROM Cursos WHERE idcurso = '1'
+
+
+-- eliminar
+DELIMITER $$
+CREATE PROCEDURE spu_eliminar_personas
+(
+	IN _idpersona INT
+)
+BEGIN
+	DELETE FROM Personas WHERE idpersona = _idpersona;
+END $$
+
+CALL spu_eliminar_personas(4)
+
+
+-- obtener
+DELIMITER $$
+CREATE PROCEDURE spu_personas_obtener
+(
+	IN _idpersona INT
+)
+BEGIN
+	SELECT * FROM Personas WHERE idpersona = _idpersona;
+END $$
+
+-- actualizar
+DELIMITER $$
+CREATE PROCEDURE spu_personas_actualizar
+(
+	IN _idpersona	INT,
+	IN _nombres	VARCHAR(30),
+	IN _apellidos	VARCHAR(30),
+	IN _sexo	CHAR(1),
+	IN _telefono	VARCHAR(9),
+	IN _correo	VARCHAR(30),
+	IN _direccion	VARCHAR(30),
+	IN _fechaNac	VARCHAR(30),
+	IN _tipoDoc	VARCHAR(10),
+	IN _numDoc	VARCHAR(15)
+)
+BEGIN
+	UPDATE Personas SET
+		nombres = _nombres,
+		apellidos = _apellidos,
+		sexo = _sexo,
+		telefono = _telefono,
+		correo = _correo,
+		direccion = _direccion,
+		fechaNac = _fechaNac,
+		tipoDoc = _tipoDoc,
+		numDoc = _numDoc
+	WHERE idpersona = _idpersona;
+END $$
+
+
 
 -- Procedimientos almacenados USUARIOS
 
@@ -186,6 +242,8 @@ SELECT * FROM DetalleTaller
 SELECT * FROM Talleres
 SELECT * FROM Personas
 SELECT * FROM Docentes
+SELECT * FROM Matriculas
+
 
 INSERT INTO Talleres (nombretaller, fechainicio, fechafin, precioregular) VALUES ('Reforzamiento escolar', '2024-01-01', '2024-03-31', 120.00)
 
@@ -205,6 +263,49 @@ INSERT INTO Pagos (idtaller, idmatricula, idformapago, monto, fechapago) VALUES 
 
 INSERT INTO Formaspago (formapago) VALUES ('Yape')
 
+<<<<<<< HEAD
+
+-- Procedimientos almacenados MATRICULAS
+
+-- REGISTRAR MATRICULAS
+
+DELIMITER $$
+CREATE PROCEDURE spu_registrar_matricula
+(
+	IN _idalumno 			INT,
+	IN _idapoderado 		INT,
+	IN _idtaller			INT,
+	IN _precioacordado	DECIMAL(7,2),
+	IN _observacion		VARCHAR(500)
+)
+BEGIN
+	INSERT INTO Matriculas(idalumno, idapoderado, idtaller, precioacordado, observacion) VALUES (_idalumno, _idapoderado, _idtaller, _precioacordado, _observacion);
+END $$
+
+CALL spu_registrar_matricula(6, 4, 4, 120.00, 'Se necesita apoyo en tareas')
+
+DELETE FROM matriculas WHERE idmatricula = 3
+
+-- LISTAR MATRICULAS
+DELIMITER $$
+CREATE PROCEDURE spu_listar_matricula()
+BEGIN
+	SELECT
+    M.idmatricula,
+    A.nombres AS estudiante,
+    P.nombres AS apoderado,
+    T. AS taller
+FROM
+    Matriculas AS M
+INNER JOIN
+    Personas AS A ON M.idalumno = A.idpersona
+INNER JOIN
+    Personas AS P ON M.idapoderado = P.idpersona
+INNER JOIN
+	 detalletaller AS T ON M.iddetalletaller = T.;
+	   
+	   
+=======
 -- Procedimientos almacenados MATRICULAS
 
 DELIMITER $$
@@ -212,3 +313,4 @@ CREATE PROCEDURE spu_registrar_matriculas
 (
 	IN _
 )
+>>>>>>> d446b977c2af5202e1d78c1f3aaa989e940b837b

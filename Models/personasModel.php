@@ -11,7 +11,8 @@ class Persona extends Conexion{
 
   public function listarPersonas(){
     try{
-      $consulta = $this->conexion->prepare("#");
+      $query = "SELECT * FROM Personas ORDER BY idpersona";
+      $consulta = $this->conexion->prepare($query);
       $consulta->execute();
       $tabla = $consulta->fetchAll(PDO::FETCH_ASSOC);
       return $tabla;
@@ -26,16 +27,18 @@ class Persona extends Conexion{
       "message"=> ""
     ];
     try{
-      $consulta = $this->conexion->prepare("#");
+      $consulta = $this->conexion->prepare("INSERT INTO Personas (nombres, apellidos, sexo, telefono, correo, direccion, fechaNac, tipoDoc, numDoc) VALUES (?,?,?,?,?,?,?,?,?)");
       $respuesta["status"] = $consulta->execute(
         array(
-          $datos["#"],
-          $datos["#"],
-          $datos["#"],
-          $datos["#"],
-          $datos["#"],
-          $datos["#"],
-          $datos["#"]
+          $datos["nombres"],
+          $datos["apellidos"],
+          $datos["sexo"],
+          $datos["telefono"],
+          $datos["correo"],
+          $datos["direccion"],
+          $datos["fechaNac"],
+          $datos["tipoDoc"],
+          $datos["numDoc"]
         )
         );
     }catch(Exception $e){
@@ -44,14 +47,14 @@ class Persona extends Conexion{
     return $respuesta;
   }
 
-  public function eliminar($idPersona = 0){
+  public function eliminar($idpersona = 0){
     $respuesta = [
       "status" => false,
-      ",essage"=> ""
+      "message"=> ""
     ];
     try{
-      $consulta = $this->conexion->prepare("#");
-      $respuesta["status"] = $consulta->execute(array($idPersona));
+      $consulta = $this->conexion->prepare("CALL spu_eliminar_personas(?)");
+      $respuesta["status"] = $consulta->execute(array($idpersona));
     }
     catch(Exception $e){
       $respuesta["message"] = "No se ah podido completar el proceso. Codigo de error ". $e->getCode();
@@ -60,10 +63,10 @@ class Persona extends Conexion{
     return $respuesta;
   }
 
-  public function obtener($idPersoan = 0){
+  public function obtener($idpersona = 0){
     try{
-      $consulta = $this->conexion->prepare("#");
-      $consulta->execute(array($idPersona));
+      $consulta = $this->conexion->prepare("CALL spu_personas_obtener(?)");
+      $consulta->execute(array($idpersona));
       return $consulta->fetch(PDO::FETCH_ASSOC);
     }
     catch(Exception $e){
@@ -77,16 +80,19 @@ class Persona extends Conexion{
       "message"=> ""
     ];
     try{
-      $consulta = $this->conexion->prepare("#");
+      $consulta = $this->conexion->prepare("CALL spu_personas_actualizar(?,?,?,?,?,?,?,?,?,?)");
       $respuesta["status"] = $consulta->execute(
         array(
-          $datos["#"],
-          $datos["#"],
-          $datos["#"],
-          $datos["#"],
-          $datos["#"],
-          $datos["#"],
-          $datos["#"],
+          $datos["idpersona"],
+          $datos["nombres"],
+          $datos["apellidos"],
+          $datos["sexo"],
+          $datos["telefono"],
+          $datos["correo"],
+          $datos["direccion"],
+          $datos["fechaNac"],
+          $datos["tipoDoc"],
+          $datos["numDoc"]
         )
         );
     }
