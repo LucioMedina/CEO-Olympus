@@ -60,29 +60,3 @@ function toast(mensaje){
 }
 
 
-btInformar.addEventListener("click", () => {
-  notificar("Acceso incorrecto", "Verifique los datos", 3);
-})
-
-btToast.addEventListener("click", () => {
-  toast("Notificación Toast");
-});
-
-btPreguntar.addEventListener("click", () => {
-  mostrarPregunta("Ventas", "¿Está seguro de registrar?").then((result) => {
-    
-    if (result.isConfirmed) {
-      notificar("Ventas", "Operación confirmada", 3);
-    }
-
-  });
-});
-
-btEliminar.addEventListener("click", () => {
-  mostrarPregunta("Eliminar", "¿está seguro de eliminar?").then((result) => {
-    if (result.isConfirmed){
-      console.log("Eliminado correctamente");
-    }
-  });
-});
-

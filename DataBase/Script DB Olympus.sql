@@ -12,7 +12,7 @@ CREATE TABLE Personas
 	direccion 	VARCHAR(30)		NOT NULL,
 	fechaNac 	DATE 				NOT NULL,
 	tipoDoc		VARCHAR(10)		NOT NULL,
-	numDoc		VARCHAR(15)		NOT NULL
+	numDoc		VARCHAR(15)		NOT NULL,
 	CONSTRAINT uk_numDoc UNIQUE (numDoc)
 )ENGINE=INNODB;
 
@@ -50,16 +50,16 @@ CREATE TABLE Docentes
 
 CREATE TABLE Matriculas
 (
-	idmatricula		INT PRIMARY KEY AUTO_INCREMENT,
-	idalumno		INT NOT NULL,
-	idapoderado		INT NOT NULL,
-	idtaller		INT NOT NULL,
-	fechamatricula	DATETIME NOT NULL DEFAULT NOW(),
-	precioacordado	DECIMAL(7,2)	NOT NULL,
-	observacion		VARCHAR(500)		NOT NULL,
+	idmatricula			INT PRIMARY KEY AUTO_INCREMENT,
+	idalumno				INT NOT NULL,
+	idapoderado			INT NOT NULL,
+	iddetalletaller	INT NOT NULL,
+	fechamatricula		DATETIME NOT NULL DEFAULT NOW(),
+	precioacordado		DECIMAL(7,2)	NOT NULL,
+	observacion			VARCHAR(500)		NOT NULL,
 	CONSTRAINT fk_idalumno_matriculas FOREIGN KEY (idalumno) REFERENCES Personas (idpersona),
-	CONSTRAINT fk_idapoderado_matriculas FOREIGN KEY (idapoderado)	REFERENCES Personas (idpersona)
-
+	CONSTRAINT fk_idapoderado_matriculas FOREIGN KEY (idapoderado)	REFERENCES Personas (idpersona),
+	CONSTRAINT fk_iddetalletaller_matriculas FOREIGN KEY (iddetalletaller)	REFERENCES DetalleTaller (iddetalletaller)
 )ENGINE=INNODB;
 
 
@@ -71,9 +71,9 @@ CREATE TABLE Pagos
 	idformapago	INT 				NOT NULL,
 	monto			DECIMAL(7,2)	NOT NULL,
 	fechapago	DATETIME 		NOT NULL,
-	CONSTRAINT fk_idmatricula_pagos FOREIGN KEY (idmatricula) REFERENCES Matriculas (idmatricula),
+	CONSTRAINT fk_idtaller_pagos FOREIGN KEY (idtaller) REFERENCES Talleres (idtaller),
+	CONSTRAINT fk_idmatricula_matriculas FOREIGN KEY (idmatricula)	REFERENCES Matriculas (idmatricula),
 	CONSTRAINT fk_idformapago_pagos FOREIGN KEY (idformapago) REFERENCES Formaspago (idformapago)
-	
 )ENGINE=INNODB;
 
 CREATE TABLE Formaspago
@@ -85,17 +85,16 @@ CREATE TABLE Formaspago
 CREATE TABLE Talleres
 (
 	idtaller 			INT PRIMARY KEY AUTO_INCREMENT,
-	nombretaller 		VARCHAR(30)		NOT NULL,
+	idcurso				INT 				NOT NULL,
+	tipotaller 			VARCHAR(30)		NOT NULL,
 	nivel 				CHAR(1)			NULL,       -- Basico(B) - Intermedio(I) - Avanzado(A)
-	fechainicio 		DATE 				NOT NULL,
-	fechafin 			DATE 				NOT NULL,
 	precioregular 		DECIMAL(7,2)	NOT NULL,
-	preciopromocional	DECIMAL(7,2)	NULL
+	CONSTRAINT fk_idcurso_talleres FOREIGN KEY (idcurso) REFERENCES Cursos (idcurso)
 )ENGINE=INNODB;
 
-CREATE TABLE Cursos 
+CREATE TABLE Cursos
 (
-	idcurso 		INT PRIMARY KEY AUTO_INCREMENT,
+	idcurso 			INT PRIMARY KEY AUTO_INCREMENT,
 	nombrecurso 	VARCHAR(30)		NOT NULL
 )ENGINE=INNODB;
 
@@ -103,20 +102,16 @@ CREATE TABLE DetalleTaller
 (
 	iddetalletaller	INT PRIMARY KEY AUTO_INCREMENT,
 	idtaller 			INT 				NOT NULL,
-	idcurso				INT 				NOT NULL,
 	iddocente 			INT 				NOT NULL,
-	dias					VARCHAR(30)		NOT NULL,
-	horainicio			TIME				NOT NULL,
-	horafin				TIME				NOT NULL,
-CONSTRAINT fk_idcurso_detallemodulo FOREIGN KEY (idcurso) REFERENCES Cursos (idcurso),
-CONSTRAINT fk_iddocente_detallemodulo FOREIGN KEY (iddocente) REFERENCES Docentes (iddocente)
+	denominacion		VARCHAR(30)		NOT NULL,
+	fechainicio			DATETIME			NOT NULL,
+	fechafin				DATETIME			NOT NULL,
+	precio 				DECIMAL(7,2)	NOT NULL,
+	horainicio			TIME 				NOT NULL,
+	horafin				TIME 	 			NOT NULL,			
+CONSTRAINT fk_idtaller_detalletaller FOREIGN KEY (idtaller) REFERENCES Cursos (idcurso),
+CONSTRAINT fk_iddocente_detalletaller FOREIGN KEY (iddocente) REFERENCES Docentes (iddocente)
 	
-)ENGINE=INNODB;
-
-CREATE TABLE ListaAlumnos
-(
-	idlistaalumno 		INT PRIMARY KEY AUTO_INCREMENT,
-	iddetalletaller	INT 		NOT NULL
 )ENGINE=INNODB;
 
 -- Procedimientos almacenados PERSONAS
@@ -263,7 +258,6 @@ INSERT INTO Pagos (idtaller, idmatricula, idformapago, monto, fechapago) VALUES 
 
 INSERT INTO Formaspago (formapago) VALUES ('Yape')
 
-<<<<<<< HEAD
 
 -- Procedimientos almacenados MATRICULAS
 
@@ -305,7 +299,7 @@ INNER JOIN
 	 detalletaller AS T ON M.iddetalletaller = T.;
 	   
 	   
-=======
+
 -- Procedimientos almacenados MATRICULAS
 
 DELIMITER $$
@@ -313,4 +307,5 @@ CREATE PROCEDURE spu_registrar_matriculas
 (
 	IN _
 )
->>>>>>> d446b977c2af5202e1d78c1f3aaa989e940b837b
+
+SELECT * FROM personas
